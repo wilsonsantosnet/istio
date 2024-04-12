@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: reviews-gateway-external-bg
+spec:
+  selector:
+    istio: aks-istio-ingressgateway-external
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews-route
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - reviews-gateway-external-bg
+  http:
+  - name: "reviews-BG-routes"
+  # - match:
+  #   - uri:
+  #       prefix: "/"
+  #   rewrite:
+  #     uri: "/health"
+    route:
+    - destination:
+        host: reviews
+        port:
+          number: 9080
+
